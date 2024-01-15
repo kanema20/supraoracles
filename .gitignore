@@ -13,3 +13,9 @@
 /.env.local
 /docker-compose.override.yaml
 /tests/Fixtures/Migrations/
+.DS_STORE
+/target
+out/
+out.json
+.idea
+.vscode
