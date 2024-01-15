@@ -1,0 +1,15 @@
+/composer.lock
+/phpunit.xml
+/phpunit-dama-doctrine.xml
+/vendor/
+/bin/tools/*/vendor/
+/build/
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+/tests/Fixtures/tmp
+/var/
+/docs/output/
+/docker/.makefile
+/.env.local
+/docker-compose.override.yaml
+/tests/Fixtures/Migrations/
