@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+ // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -63,7 +63,7 @@ contract TestToken is IERC20 {
     }
 }
 
-contract Presale is Ownable {
+contract TokenSale is Ownable {
     uint256 public presaleCap;    // Total cap for the presale in ETH
     uint256 public pubsaleCap;    // Total cap for the pubsale in ETH
     uint256 public presaleTokenPrice;    // Price of 1 presale token in wei
@@ -86,7 +86,6 @@ contract Presale is Ownable {
     uint256 public presaleEndTime;   // start time of the presale period
     uint256 public pubsaleStartTime;   // start time of the presale period
     uint256 public pubsaleEndTime;   // start time of the presale period
-    uint256 public tokenPrice;
     TestToken public token; // initialize TestToken to be used for Sale
 
     event TokensPurchased(address indexed buyer, uint256 amount);
@@ -98,11 +97,12 @@ contract Presale is Ownable {
     event PresaleTokensDistributed(address user, uint256 amount);
     event PubsaleTokensDistributed(address user, uint256 amount);
 
-    constructor(TestToken _token, uint256 _presaleCap, uint256 _presaleTokenPrice, uint256 _pubsaleTokenPrice, uint256 _minContribution, uint256 _maxContribution, uint256 _presaleLength, uint256 _pubsaleLength)
+    constructor(TestToken _token, uint256 _presaleCap, uint256 _pubsaleCap, uint256 _presaleTokenPrice, uint256 _pubsaleTokenPrice, uint256 _minContribution, uint256 _maxContribution, uint256 _presaleLength, uint256 _pubsaleLength)
         Ownable(msg.sender)
     {
         token = _token;
         presaleCap = _presaleCap;
+        pubsaleCap = _pubsaleCap;
         presaleTokenPrice = _presaleTokenPrice;
         pubsaleTokenPrice = _pubsaleTokenPrice;
         minContribution = _minContribution;
@@ -145,7 +145,7 @@ contract Presale is Ownable {
         require(msg.value <= maxContribution, "Exceeds maximum contribution amount");
         require(!refundClaimed[msg.sender], "Refund already claimed");
 
-        uint256 tokensToBuy = msg.value / tokenPrice;
+        uint256 tokensToBuy = msg.value / presaleTokenPrice;
         // require(IERC20(tokenAddress).transfer(msg.sender, tokensToBuy), "Token transfer failed");
         presaleBalances[msg.sender] += tokensToBuy;
         totalTokensSold += tokensToBuy;
@@ -162,7 +162,7 @@ contract Presale is Ownable {
         require(msg.value <= maxContribution, "Exceeds maximum contribution amount");
         require(!refundClaimed[msg.sender], "Refund already claimed");
 
-        uint256 tokensToBuy = msg.value / tokenPrice;
+        uint256 tokensToBuy = msg.value / pubsaleTokenPrice;
         require(tokensToBuy > 0, "Insufficient amount to buy tokens");
 
         require(IERC20(address(token)).transfer(msg.sender, tokensToBuy), "Token transfer failed");

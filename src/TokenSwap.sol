@@ -17,9 +17,8 @@ contract TokenSwap {
     event SwapAtoB(address indexed sender, uint256 amount);
     event SwapBtoA(address indexed sender, uint256 amount);
 
-    constructor(address _tokenA, address _tokenB, uint256 _SwapRateAtoB, uint256 _SwapRateBtoA) {
+    constructor(address _tokenA, address _tokenB, uint256 _SwapRateAtoB) {
         SwapRateAtoB = _SwapRateAtoB; // 3
-        SwapRateBtoA = _SwapRateBtoA; // 1/3
         tokenA = _tokenA;
         tokenB = _tokenB;
     }   
@@ -54,7 +53,7 @@ contract TokenSwap {
         uint256 tokenBBalance = tokenB_.balanceOf(msg.sender);
         require(tokenBBalance >= amount, "Insufficient tokenB balance");
 
-        uint256 tokenAAmount = amount * SwapRateBtoA;
+        uint256 tokenAAmount = amount / SwapRateBtoA;
 
         uint256 tokenABalance = tokenA_.balanceOf(address(this));
         require(tokenABalance >= tokenAAmount, "Insufficient tokenA balance");

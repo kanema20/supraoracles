@@ -198,14 +198,14 @@ contract DecentralizedVoting is Ownable {
                 max = result[i];
             }
         }
-        bool[] memory winner = new bool[](len);
+        bool[] memory winner_ = new bool[](len);
         for (uint i = 0; i < len; i++) {
             if (result[i] == max) {
-                winner[i] = true;
+                winner_[i] = true;
             }
         }
         emit BallotWinner(ballotIndex_, ballot.candidates[max].candidateAddress);
 
-        return winner;
+        return winner_;
     }
 }
