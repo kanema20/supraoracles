@@ -51,9 +51,6 @@ contract DecentralizedVoting is Ownable {
         uint256 indexed ballotId, address indexed candidateAddress, bytes name, uint256 age, bytes position
     );
     event VoteCast(uint256 indexed ballotId, address indexed voterAddress, uint256 indexed candidateId);
-    // event BallotClosed(
-    //     uint indexed ballotId
-    // );
     event VoterRegistered(address indexed voterAddress);
     event BallotWinner(uint256 indexed ballotId, address indexed candidateAddress);
     event VotingOpen(uint256 indexed ballotId, uint256 startTime, uint256 duration);

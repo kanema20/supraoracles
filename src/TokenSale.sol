@@ -130,6 +130,7 @@ contract TokenSale is Ownable {
         if (presaleStartTime + presaleLength <= block.timestamp) {
             openPublicSale();
         }
+        require(whiteListedForPresale[msg.sender], "Not whitelisted for presale");
         require(presaleOpen == true, "Presale period has ended");
         require(totalTokensSold < presaleCap, "Presale cap reached");
         require(msg.value >= minContribution, "Below minimum contribution amount");
