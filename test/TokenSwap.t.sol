@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import {Test, console2} from "forge-std/Test.sol";
-import { TokenSwap} from "../src/TokenSwap.sol";
-import { TestToken } from "../src/TokenSale.sol";
+import {TokenSwap} from "../src/TokenSwap.sol";
+import {TestToken} from "../src/TokenSale.sol";
 
 contract TokenSwapTest is Test {
     TokenSwap public tokenSwap;
@@ -18,12 +18,12 @@ contract TokenSwapTest is Test {
 
     function test_swapAtoB(uint256 fromAmount) public {
         tokenSwap.swapAtoB(fromAmount);
-        assertEq(tokenB.balanceOf(msg.sender), fromAmount*tokenSwap.getRateAtoB());
+        assertEq(tokenB.balanceOf(msg.sender), fromAmount * tokenSwap.getRateAtoB());
     }
 
     function test_swapBtoA(uint256 fromAmount) public {
         tokenSwap.swapBtoA(fromAmount);
-        assertEq(tokenA.balanceOf(msg.sender), fromAmount/tokenSwap.getRateAtoB());
+        assertEq(tokenA.balanceOf(msg.sender), fromAmount / tokenSwap.getRateAtoB());
     }
 
     function test_getRateAtoB() public {

@@ -1,8 +1,8 @@
- // SPDX-License-Identifier: UNLICENSED
+    // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import { IERC20 } from "forge-std/interfaces/IERC20.sol";
+import {IERC20} from "forge-std/interfaces/IERC20.sol";
 
 contract TestToken is IERC20 {
     string public name;
@@ -13,12 +13,7 @@ contract TestToken is IERC20 {
     mapping(address => uint256) public override balanceOf;
     mapping(address => mapping(address => uint256)) public override allowance;
 
-    constructor(
-        string memory _name,
-        string memory _symbol,
-        uint8 _decimals,
-        uint256 _totalSupply
-    ) {
+    constructor(string memory _name, string memory _symbol, uint8 _decimals, uint256 _totalSupply) {
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
@@ -26,11 +21,7 @@ contract TestToken is IERC20 {
         balanceOf[msg.sender] = _totalSupply;
     }
 
-    function transfer(address _to, uint256 _value)
-        external
-        override
-        returns (bool)
-    {
+    function transfer(address _to, uint256 _value) external override returns (bool) {
         require(balanceOf[msg.sender] >= _value, "insufficient balance");
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
@@ -38,21 +29,13 @@ contract TestToken is IERC20 {
         return true;
     }
 
-    function approve(address _spender, uint256 _value)
-        external
-        override
-        returns (bool)
-    {
+    function approve(address _spender, uint256 _value) external override returns (bool) {
         allowance[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
     }
 
-    function transferFrom(
-        address _from,
-        address _to,
-        uint256 _value
-    ) external override returns (bool) {
+    function transferFrom(address _from, address _to, uint256 _value) external override returns (bool) {
         require(balanceOf[_from] >= _value, "insufficient balance");
         require(allowance[_from][msg.sender] >= _value, "insufficient allowance");
         balanceOf[_from] -= _value;
@@ -64,10 +47,10 @@ contract TestToken is IERC20 {
 }
 
 contract TokenSale is Ownable {
-    uint256 public presaleCap;    // Total cap for the presale in ETH
-    uint256 public pubsaleCap;    // Total cap for the pubsale in ETH
-    uint256 public presaleTokenPrice;    // Price of 1 presale token in wei
-    uint256 public pubsaleTokenPrice;    // Price of 1 pubsale token in wei
+    uint256 public presaleCap; // Total cap for the presale in ETH
+    uint256 public pubsaleCap; // Total cap for the pubsale in ETH
+    uint256 public presaleTokenPrice; // Price of 1 presale token in wei
+    uint256 public pubsaleTokenPrice; // Price of 1 pubsale token in wei
     uint256 public totalTokensSold;
     bool public presaleOpen;
     bool public pubsaleOpen;
@@ -78,14 +61,14 @@ contract TokenSale is Ownable {
     mapping(address => bool) public refundClaimed;
     mapping(address => bool) public whiteListedForPresale;
 
-    uint256 public minContribution;  // Minimum ETH contribution amount
-    uint256 public maxContribution;  // Maximum ETH contribution amount
-    uint256 public presaleLength;   // End time of the presale period
-    uint256 public pubsaleLength;   // End time of the presale period
-    uint256 public presaleStartTime;   // start time of the presale period
-    uint256 public presaleEndTime;   // start time of the presale period
-    uint256 public pubsaleStartTime;   // start time of the presale period
-    uint256 public pubsaleEndTime;   // start time of the presale period
+    uint256 public minContribution; // Minimum ETH contribution amount
+    uint256 public maxContribution; // Maximum ETH contribution amount
+    uint256 public presaleLength; // End time of the presale period
+    uint256 public pubsaleLength; // End time of the presale period
+    uint256 public presaleStartTime; // start time of the presale period
+    uint256 public presaleEndTime; // start time of the presale period
+    uint256 public pubsaleStartTime; // start time of the presale period
+    uint256 public pubsaleEndTime; // start time of the presale period
     TestToken public token; // initialize TestToken to be used for Sale
 
     event TokensPurchased(address indexed buyer, uint256 amount);
@@ -97,9 +80,17 @@ contract TokenSale is Ownable {
     event PresaleTokensDistributed(address user, uint256 amount);
     event PubsaleTokensDistributed(address user, uint256 amount);
 
-    constructor(TestToken _token, uint256 _presaleCap, uint256 _pubsaleCap, uint256 _presaleTokenPrice, uint256 _pubsaleTokenPrice, uint256 _minContribution, uint256 _maxContribution, uint256 _presaleLength, uint256 _pubsaleLength)
-        Ownable(msg.sender)
-    {
+    constructor(
+        TestToken _token,
+        uint256 _presaleCap,
+        uint256 _pubsaleCap,
+        uint256 _presaleTokenPrice,
+        uint256 _pubsaleTokenPrice,
+        uint256 _minContribution,
+        uint256 _maxContribution,
+        uint256 _presaleLength,
+        uint256 _pubsaleLength
+    ) Ownable(msg.sender) {
         token = _token;
         presaleCap = _presaleCap;
         pubsaleCap = _pubsaleCap;

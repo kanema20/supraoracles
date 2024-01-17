@@ -10,7 +10,8 @@ contract TokenSaleTest is Test {
 
     function setUp() public {
         tokenA = new TestToken("TokenA", "TKA", 18, 100000000);
-        tokenSale = new TokenSale(tokenA, 50000000, 50000000, 0.0001 ether, 0.0002 ether, 0.0001 ether, 1 ether, 14400, 14400);
+        tokenSale =
+            new TokenSale(tokenA, 50000000, 50000000, 0.0001 ether, 0.0002 ether, 0.0001 ether, 1 ether, 14400, 14400);
     }
 
     function test_openPresale() public {
@@ -34,27 +35,27 @@ contract TokenSaleTest is Test {
     }
 
     function test_distributePresaleTokens(address user) public {
-        uint userBal = tokenSale.presaleBalances[user];
+        uint256 userBal = tokenSale.presaleBalances[user];
         tokenSale.distributePresaleTokens(user);
         assertEq(userBal, tokenA.balanceOf(user));
     }
 
     function test_distributePubsaleTokens(address user) public {
-        uint userBal = tokenSale.pubsaleBalances[user];
+        uint256 userBal = tokenSale.pubsaleBalances[user];
         tokenSale.distributePubsaleTokens(user);
         assertEq(userBal, tokenA.balanceOf(user));
     }
 
     function test_claimPresaleRefund() public {
-        uint userContribution = tokenSale.presaleEthContributions[msg.sender];
-        uint userEthBalance = address(msg.sender).balance;
+        uint256 userContribution = tokenSale.presaleEthContributions[msg.sender];
+        uint256 userEthBalance = address(msg.sender).balance;
         tokenSale.claimPresaleRefund();
         assertEq(userContribution, address(msg.sender).balance - userEthBalance);
     }
 
     function test_claimPubsaleRefund() public {
-        uint userContribution = tokenSale.pubsaleEthContributions[msg.sender];
-        uint userEthBalance = address(msg.sender).balance;
+        uint256 userContribution = tokenSale.pubsaleEthContributions[msg.sender];
+        uint256 userEthBalance = address(msg.sender).balance;
         tokenSale.claimPubsaleRefund();
         assertEq(userContribution, address(msg.sender).balance - userEthBalance);
     }

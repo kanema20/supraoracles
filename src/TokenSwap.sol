@@ -21,7 +21,7 @@ contract TokenSwap {
         SwapRateAtoB = _SwapRateAtoB; // 3
         tokenA = _tokenA;
         tokenB = _tokenB;
-    }   
+    }
 
     function swapAtoB(uint256 amount) external {
         require(amount > 0, "Amount must be greater than zero");
@@ -35,7 +35,7 @@ contract TokenSwap {
 
         uint256 tokenBBalance = tokenB_.balanceOf(address(this));
         require(tokenBBalance >= tokenBAmount, "Insufficient tokenB balance");
-        
+
         // Transfer tokens from sender to contract
         require(tokenA_.transferFrom(msg.sender, address(this), amount), "Failed to transfer tokenA");
 
@@ -57,7 +57,7 @@ contract TokenSwap {
 
         uint256 tokenABalance = tokenA_.balanceOf(address(this));
         require(tokenABalance >= tokenAAmount, "Insufficient tokenA balance");
-        
+
         // Transfer tokens from sender to contract
         require(tokenB_.transferFrom(msg.sender, address(this), amount), "Failed to transfer tokenA");
 

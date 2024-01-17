@@ -2,34 +2,34 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import { IERC20 } from "forge-std/interfaces/IERC20.sol";
+import {IERC20} from "forge-std/interfaces/IERC20.sol";
 
 contract DecentralizedVoting is Ownable {
     // counter enables us to use a mapping
     // instead of an array for the ballots
     // this is more gas effiecient
-    uint public ballotCounter;
-    uint public candidateCounter;
-    uint public voterCounter;
+    uint256 public ballotCounter;
+    uint256 public candidateCounter;
+    uint256 public voterCounter;
 
-    mapping (uint256 => Candidate) public candidates;
-    mapping (uint256 => Voter) public voters;
-    mapping (uint256 => Ballot) public ballots;
+    mapping(uint256 => Candidate) public candidates;
+    mapping(uint256 => Voter) public voters;
+    mapping(uint256 => Ballot) public ballots;
 
-    mapping (address => bool) public isRegistered;
-    mapping (address => bool) public isBlacklisted;
+    mapping(address => bool) public isRegistered;
+    mapping(address => bool) public isBlacklisted;
 
     struct Ballot {
         Candidate[] candidates;
-        uint startTime;
-        uint duration;
+        uint256 startTime;
+        uint256 duration;
         bool ballotOpen;
     }
 
     struct Candidate {
         address candidateAddress;
         bytes name;
-        uint age;
+        uint256 age;
         bytes position;
         bool addedToBallot;
     }
@@ -40,56 +40,35 @@ contract DecentralizedVoting is Ownable {
         bool hasVoted;
     }
 
-    mapping(uint => mapping(uint => uint)) private _tally;
-    mapping(uint => mapping(address => bool)) public hasVoted;
-    mapping(uint => mapping(address => bool)) public addedToBallot;
+    mapping(uint256 => mapping(uint256 => uint256)) private _tally;
+    mapping(uint256 => mapping(address => bool)) public hasVoted;
+    mapping(uint256 => mapping(address => bool)) public addedToBallot;
 
     // EVENTS
     // TODO: FINISH EMITTING THESE
-    event BallotCreated(
-        uint indexed ballotId,
-        uint startTime,
-        uint duration
-    );
+    event BallotCreated(uint256 indexed ballotId, uint256 startTime, uint256 duration);
     event CandidateAdded(
-        uint indexed ballotId,
-        address indexed candidateAddress,
-        bytes name,
-        uint age,
-        bytes position
+        uint256 indexed ballotId, address indexed candidateAddress, bytes name, uint256 age, bytes position
     );
-    event VoteCast(
-        uint indexed ballotId,
-        address indexed voterAddress,
-        uint indexed candidateId
-    );
+    event VoteCast(uint256 indexed ballotId, address indexed voterAddress, uint256 indexed candidateId);
     // event BallotClosed(
     //     uint indexed ballotId
     // );
-    event VoterRegistered(
-        address indexed voterAddress
-    );
-    event BallotWinner(
-        uint indexed ballotId,
-        address indexed candidateAddress
-    );
-    event VotingOpen(
-        uint indexed ballotId,
-        uint startTime,
-        uint duration
-    );
+    event VoterRegistered(address indexed voterAddress);
+    event BallotWinner(uint256 indexed ballotId, address indexed candidateAddress);
+    event VotingOpen(uint256 indexed ballotId, uint256 startTime, uint256 duration);
 
-    constructor(uint ballotCounter_, uint voterCounter_, uint candidateCounter_) Ownable(msg.sender) {
+    constructor(uint256 ballotCounter_, uint256 voterCounter_, uint256 candidateCounter_) Ownable(msg.sender) {
         ballotCounter = ballotCounter_;
         voterCounter = voterCounter_;
         candidateCounter = candidateCounter_;
     }
 
     function addCandidate(
-        uint ballotIndex_,
+        uint256 ballotIndex_,
         address candidateAddress_,
         bytes memory name_,
-        uint age_,
+        uint256 age_,
         bytes memory position_
     ) internal onlyOwner {
         require(addedToBallot[ballotIndex_][candidateAddress_], "Candidate already added");
@@ -103,18 +82,12 @@ contract DecentralizedVoting is Ownable {
     }
 
     modifier notBlacklisted() {
-        require(
-            !isBlacklisted[msg.sender],
-            "Address is blacklisted"
-        );
+        require(!isBlacklisted[msg.sender], "Address is blacklisted");
         _;
     }
 
     function register() public notBlacklisted {
-        require(
-            !isRegistered[msg.sender],
-            "Address already registered"
-        );
+        require(!isRegistered[msg.sender], "Address already registered");
         isRegistered[msg.sender] = true;
         hasVoted[ballotCounter][msg.sender] = false;
         voters[voterCounter] = Voter(msg.sender, true, false);
@@ -122,29 +95,18 @@ contract DecentralizedVoting is Ownable {
         emit VoterRegistered(msg.sender);
     }
 
-    function getBallotByIndex(
-        uint index_
-    ) external view returns (Ballot memory ballot) {
+    function getBallotByIndex(uint256 index_) external view returns (Ballot memory ballot) {
         ballot = ballots[index_];
     }
 
-    function castVote(uint ballotIndex_, uint candidateIndex_) external {
+    function castVote(uint256 ballotIndex_, uint256 candidateIndex_) external {
         // must be registered
         require(isRegistered[msg.sender], "voter is not reigstered");
         // can only vote once
-        require(
-            !hasVoted[ballotIndex_][msg.sender],
-            "Address already casted a vote for this ballot"
-        );
+        require(!hasVoted[ballotIndex_][msg.sender], "Address already casted a vote for this ballot");
         Ballot memory ballot = ballots[ballotIndex_];
-        require(
-            block.timestamp >= ballot.startTime,
-            "Can't cast before start time"
-        );
-        require(
-            block.timestamp < ballot.startTime + ballot.duration,
-            "Can't cast after end time"
-        );
+        require(block.timestamp >= ballot.startTime, "Can't cast before start time");
+        require(block.timestamp < ballot.startTime + ballot.duration, "Can't cast after end time");
 
         _tally[ballotIndex_][candidateIndex_]++;
         hasVoted[ballotIndex_][msg.sender] = true;
@@ -152,12 +114,12 @@ contract DecentralizedVoting is Ownable {
         emit VoteCast(ballotIndex_, msg.sender, candidateIndex_);
     }
 
-    function isBallotOpen(uint ballotIndex_) public view returns(bool) {
+    function isBallotOpen(uint256 ballotIndex_) public view returns (bool) {
         Ballot memory ballot = ballots[ballotIndex_];
         return ballot.ballotOpen;
     }
 
-    function createBallot(uint duration_, uint startTime_, Candidate[] memory candidates_) internal onlyOwner {
+    function createBallot(uint256 duration_, uint256 startTime_, Candidate[] memory candidates_) internal onlyOwner {
         require(!ballots[ballotCounter].ballotOpen, "Ballot already open");
         ballots[ballotCounter] = Ballot(candidates_, startTime_, duration_, true);
         ballotCounter++;
@@ -165,41 +127,38 @@ contract DecentralizedVoting is Ownable {
         emit VotingOpen(ballotCounter, startTime_, duration_);
     }
 
-    function getCandidates(uint _ballotIndex) public returns (Candidate[] memory) {
+    function getCandidates(uint256 _ballotIndex) public returns (Candidate[] memory) {
         Ballot memory ballot = ballots[_ballotIndex];
         return ballot.candidates;
     }
 
-    function getTallyByCandidate(
-        uint ballotIndex_,
-        uint candidateIndex_
-    ) external view returns (uint) {
+    function getTallyByCandidate(uint256 ballotIndex_, uint256 candidateIndex_) external view returns (uint256) {
         return _tally[ballotIndex_][candidateIndex_];
     }
 
-    function results(uint ballotIndex_) external view returns (uint[] memory) {
+    function results(uint256 ballotIndex_) external view returns (uint256[] memory) {
         Ballot memory ballot = ballots[ballotIndex_];
-        uint len = ballot.candidates.length;
-        uint[] memory result = new uint[](len);
-        for (uint i = 0; i < len; i++) {
+        uint256 len = ballot.candidates.length;
+        uint256[] memory result = new uint256[](len);
+        for (uint256 i = 0; i < len; i++) {
             result[i] = _tally[ballotIndex_][i];
         }
         return result;
     }
 
-    function winner(uint ballotIndex_) external returns (bool[] memory) {
+    function winner(uint256 ballotIndex_) external returns (bool[] memory) {
         Ballot memory ballot = ballots[ballotIndex_];
-        uint len = ballot.candidates.length;
-        uint[] memory result = new uint[](len);
-        uint max;
-        for (uint i = 0; i < len; i++) {
+        uint256 len = ballot.candidates.length;
+        uint256[] memory result = new uint256[](len);
+        uint256 max;
+        for (uint256 i = 0; i < len; i++) {
             result[i] = _tally[ballotIndex_][i];
             if (result[i] > max) {
                 max = result[i];
             }
         }
         bool[] memory winner_ = new bool[](len);
-        for (uint i = 0; i < len; i++) {
+        for (uint256 i = 0; i < len; i++) {
             if (result[i] == max) {
                 winner_[i] = true;
             }

@@ -7,7 +7,7 @@ import {MultiSigWallet} from "../src/MultiSig.sol";
 contract MultiSigWalletTest is Test {
     struct TxData {
         address to;
-        uint value;
+        uint256 value;
         bytes data;
     }
 
@@ -20,22 +20,22 @@ contract MultiSigWalletTest is Test {
 
     function test_submitTransaction(TxData memory txData) public {
         multiSigWallet.submitTransaction(txData.to, txData.value, txData.data);
-        uint txIndex = multiSigWallet.transactions.length;
+        uint256 txIndex = multiSigWallet.transactions.length;
         assertEq(txData, multiSigWallet.transactions[txIndex]);
     }
 
-    function test_confirmTransaction(uint txIndex) public {
-        uint txConfirmations = multiSigWallet.transactions[txIndex].numConfirmations;
+    function test_confirmTransaction(uint256 txIndex) public {
+        uint256 txConfirmations = multiSigWallet.transactions[txIndex].numConfirmations;
         multiSigWallet.confirmTransaction(txIndex);
         assertEq(txConfirmations + 1, multiSigWallet.transactions[txIndex].numConfirmations);
     }
 
-    function test_executeTransaction(uint txIndex) public {
+    function test_executeTransaction(uint256 txIndex) public {
         multiSigWallet.executeTransaction(txIndex);
         assertEq(multiSigWallet.transactions[txIndex].executed, true);
     }
-    
-    function test_revokeConfirmation(uint txIndex) public {
+
+    function test_revokeConfirmation(uint256 txIndex) public {
         multiSigWallet.revokeConfirmation(txIndex);
         assertEq(multiSigWallet.isConfirmed[txIndex][msg.sender], false);
     }
@@ -48,7 +48,7 @@ contract MultiSigWalletTest is Test {
         assertEq(multiSigWallet.getTransactionCount(), multiSigWallet.transactions.length);
     }
 
-    function test_getTransaction(uint txIndex) public {
+    function test_getTransaction(uint256 txIndex) public {
         assertEq(multiSigWallet.getTransaction(txIndex), multiSigWallet.transactions[txIndex]);
     }
 }
