@@ -16,13 +16,17 @@ contract TokenSwapTest is Test {
         tokenSwap = new TokenSwap(address(tokenA), address(tokenB), 3);
     }
 
-    // function test_Increment() public {
-    //     counter.increment();
-    //     assertEq(counter.number(), 1);
-    // }
+    function test_swapAtoB(uint256 fromAmount) public {
+        tokenSwap.swapAtoB(fromAmount);
+        assertEq(tokenB.balanceOf(msg.sender), fromAmount*tokenSwap.getRateAtoB());
+    }
 
-    // function testFuzz_SetNumber(uint256 x) public {
-    //     counter.setNumber(x);
-    //     assertEq(counter.number(), x);
-    // }
+    function test_swapBtoA(uint256 fromAmount) public {
+        tokenSwap.swapBtoA(fromAmount);
+        assertEq(tokenA.balanceOf(msg.sender), fromAmount/tokenSwap.getRateAtoB());
+    }
+
+    function test_getRateAtoB() public {
+        assertEq(tokenSwap.getRateAtoB(), 3);
+    }
 }

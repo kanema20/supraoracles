@@ -9,16 +9,53 @@ contract TokenSaleTest is Test {
     TestToken public tokenA;
 
     function setUp() public {
-        tokenSale = new TokenSale(tokenA, 50000, 50000, 0.0001 ether, 0.0002 ether, 0.0001 ether, 1 ether, 14400, 14400);
+        tokenA = new TestToken("TokenA", "TKA", 18, 100000000);
+        tokenSale = new TokenSale(tokenA, 50000000, 50000000, 0.0001 ether, 0.0002 ether, 0.0001 ether, 1 ether, 14400, 14400);
     }
 
-    // function test_Increment() public {
-    //     counter.increment();
-    //     assertEq(counter.number(), 1);
-    // }
+    function test_openPresale() public {
+        tokenSale.openPresale();
+        assertEq(tokenSale.presaleOpen, true);
+    }
 
-    // function testFuzz_SetNumber(uint256 x) public {
-    //     counter.setNumber(x);
-    //     assertEq(counter.number(), x);
-    // }
+    function test_openPubsale() public {
+        tokenSale.openPubsale();
+        assertEq(tokenSale.pubsaleOpen, true);
+    }
+
+    function test_buyPresaleTokens() public {
+        tokenSale.buyPresaleTokens();
+        assertEq(tokenSale.presaleBalances[msg.sender], msg.value * tokenSale.presaleTokenPrice);
+    }
+
+    function test_buyPubsaleTokens() public {
+        tokenSale.buyPubsaleTokens();
+        assertEq(tokenSale.pubsaleBalances[msg.sender], msg.value * tokenSale.pubsaleTokenPrice);
+    }
+
+    function test_distributePresaleTokens(address user) public {
+        uint userBal = tokenSale.presaleBalances[user];
+        tokenSale.distributePresaleTokens(user);
+        assertEq(userBal, tokenA.balanceOf(user));
+    }
+
+    function test_distributePubsaleTokens(address user) public {
+        uint userBal = tokenSale.pubsaleBalances[user];
+        tokenSale.distributePubsaleTokens(user);
+        assertEq(userBal, tokenA.balanceOf(user));
+    }
+
+    function test_claimPresaleRefund() public {
+        uint userContribution = tokenSale.presaleEthContributions[msg.sender];
+        uint userEthBalance = address(msg.sender).balance;
+        tokenSale.claimPresaleRefund();
+        assertEq(userContribution, address(msg.sender).balance - userEthBalance);
+    }
+
+    function test_claimPubsaleRefund() public {
+        uint userContribution = tokenSale.pubsaleEthContributions[msg.sender];
+        uint userEthBalance = address(msg.sender).balance;
+        tokenSale.claimPubsaleRefund();
+        assertEq(userContribution, address(msg.sender).balance - userEthBalance);
+    }
 }

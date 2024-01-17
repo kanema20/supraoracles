@@ -126,7 +126,7 @@ contract TokenSale is Ownable {
         emit PresaleOpened(presaleStartTime, presaleLength, presaleEndTime);
     }
 
-    function openPublicSale() internal {
+    function openPublicSale() internal onlyOwner {
         require(pubsaleOpen != true, "pubsale already open");
         pubsaleStartTime = block.timestamp;
         presaleOpen = false;
@@ -224,7 +224,7 @@ contract TokenSale is Ownable {
         emit PubsaleRefundClaimed(msg.sender, refundAmount);
     }
 
-    function withdrawFunds() external {
+    function withdrawFunds() external onlyOwner {
         require(block.timestamp > presaleEndTime, "Presale period has not ended");
         require(totalTokensSold == presaleCap, "Presale not yet completed");
         require(address(this).balance > 0, "No funds to withdraw");

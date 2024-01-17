@@ -70,8 +70,4 @@ contract TokenSwap {
     function getRateAtoB() public view returns (uint256) {
         return SwapRateAtoB;
     }
-
-    function getRateBtoA() public view returns (uint256) {
-        return SwapRateBtoA;
-    }
 }
